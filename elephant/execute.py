@@ -1,5 +1,5 @@
 from elephant.utils import FindFileUtils
-from elephant.commands import Canvas, Line
+from elephant.commands import Canvas, Line, Rectangle
 
 
 class CommandRunner:
@@ -27,14 +27,14 @@ class CommandRunner:
                         character='x'
                     ).create(*command_params)
 
-                # if command_type.lowercase() == 'r':
-                #     some(
-                #         x1=command_type[3],
-                #         y1=command_type[5],
-                #         x2=command_type[7],
-                #         y2=command_type[9]
-                #     )
-                # if command_type.lowercase() == 'b':
+                if command_type == 'r':
+                    template = Rectangle(
+                        f,
+                        template=template,
+                        character='x'
+                    ).create(*command_params)
+
+                # if command_type == 'b':
                 #     some(
                 #         x=command_type[3],
                 #         y=command_type[5],

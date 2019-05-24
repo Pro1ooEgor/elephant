@@ -1,5 +1,4 @@
-from elephant.error import ValidationError
-from .base_command import BaseCommand
+from .base_classes import BaseCommand
 
 
 class Canvas(BaseCommand):

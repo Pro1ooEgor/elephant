@@ -1,29 +1,27 @@
 from elephant.error import ValidationError
-from .base_command import BaseCommand
+from .base_classes import BaseCommand, BaseError
 
 
-class Line(BaseCommand):
-    def create(self, x1, y1, x2, y2):
-        """
-        Create a new line from (x1,y1) to (x2,y2)
-        :param x1: width (positive int)
-        :param y1: height (positive int)
-        :param x2: width (positive int)
-        :param y2: height (positive int)
-        :return: list of str, that was added to the file in this step
-        """
-        # Error checking
+class Line(BaseCommand, BaseError):
+    def check_error(self, x1, y1, x2, y2):
+        super().check_error(self.template, x1, y1, x2, y2)
+
+        # currently
         if x1 != x2 and y1 != y2:
             raise ValidationError('Only horizontal or vertical lines are supported')
-        if x1 == x2 and y1 == y2:
-            raise ValidationError('Not correct coordinates')
-        if not self.template:
-            raise ValidationError('Not found template. Give it to the class instance')
-        x_len = len(self.template[0]-1)
-        y_len = len(self.template-1)
-        if x1 > x_len or x2 > x_len or x1 < 0 or x2 < 0 \
-                or y1 > y_len or y2 > y_len or y1 < 0 or y2 < 0:
-            raise ValidationError('Not correct coordinates')
+
+    def create(self, x1, y1, x2, y2, is_save=True):
+        """
+        Create a new line from (x1,y1) to (x2,y2)
+        :param x1: (positive int)
+        :param y1: (positive int)
+        :param x2: (positive int)
+        :param y2: (positive int)
+        :param is_save: (optional) is_save=False is ability to add a line
+        to the template without saving to the file
+        :return: list of str, that was added to the file in this step
+        """
+        self.check_error(x1, y1, x2, y2)
 
         if y1 == y2:
             for index, x in enumerate(self.template[y1]):
@@ -42,8 +40,8 @@ class Line(BaseCommand):
                         self.character,
                         self.template[index][x1+1:]
                     ))
-
-        self.file.write('\n'.join(self.template) + '\n')
+        if is_save:
+            self.file.write('\n'.join(self.template) + '\n')
 
         return self.template
 
