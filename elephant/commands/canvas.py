@@ -6,8 +6,8 @@ class Canvas(BaseCommand):
     def create(self, w, h):
         """
         Create a new canvas of width w and height h.
-        :param w: width (int)
-        :param h: height (int)
+        :param w: width (positive int)
+        :param h: height (positive int)
         :return: list of str, that was added to the file in this step
         """
         template = []
