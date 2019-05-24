@@ -1,10 +1,22 @@
-import _io
+from elephant.error import ValidationError
+from .base_command import BaseCommand
 
 
-class Canvas:
-    def __init__(self, file: _io.TextIOWrapper):
-        print(type(file))
-        self.file = file
+class Canvas(BaseCommand):
+    def create(self, w, h):
+        """
+        Create a new canvas of width w and height h.
+        :param w: width (int)
+        :param h: height (int)
+        :return: list of str, that was added to the file in this step
+        """
+        template = []
 
-    def create(self):
-        self.file.write('aaa')
+        template.append('-'*(w+2))
+        for height in range(h):
+            template.append('|' + ' '*w + '|')
+        template.append('-'*(w+2))
+
+        self.file.write('\n'.join(template) + '\n')
+
+        return template

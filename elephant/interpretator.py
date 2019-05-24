@@ -8,7 +8,7 @@ class Interpretator:
 
     def read(self) -> list:
         """
-        :return: list of commands reading from file
+        :return: list of commands read from file
         """
         with open(self.file_path, self.open_mode) as f:
             return f.read().splitlines()
