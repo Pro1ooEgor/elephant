@@ -1,10 +1,19 @@
+import _io
+import os
+
 from elephant.error import ValidationError
+from elephant.constants import LINE_CHARACTER
 from .base_classes import BaseCommand, BaseError
 
 
 class Line(BaseCommand, BaseError):
-    def check_error(self, x1, y1, x2, y2):
-        super().check_error(self.template, x1, y1, x2, y2)
+    def __init__(self, file: _io.TextIOWrapper, template: list, character: str):
+        super().__init__(file, template, character)
+        if not os.environ.get(LINE_CHARACTER, False):
+            os.environ[LINE_CHARACTER] = character
+
+    def check_errors(self, x1, y1, x2, y2):
+        super().check_errors(self.template, x1, y1, x2, y2)
 
         # currently
         if x1 != x2 and y1 != y2:
@@ -21,7 +30,7 @@ class Line(BaseCommand, BaseError):
         to the template without saving to the file
         :return: list of str, that was added to the file in this step
         """
-        self.check_error(x1, y1, x2, y2)
+        self.check_errors(x1, y1, x2, y2)
 
         if y1 == y2:
             for index, x in enumerate(self.template[y1]):
@@ -40,6 +49,7 @@ class Line(BaseCommand, BaseError):
                         self.character,
                         self.template[index][x1+1:]
                     ))
+
         if is_save:
             self.file.write('\n'.join(self.template) + '\n')
 

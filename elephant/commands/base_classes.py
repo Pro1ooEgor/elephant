@@ -4,7 +4,7 @@ from elephant.error import ValidationError
 
 
 class BaseCommand:
-    def __init__(self, file: _io.TextIOWrapper, template: list = None, character: str = ''):
+    def __init__(self, file: _io.TextIOWrapper, template: list = None, character: str = ' '):
         """
         :param file: open file
         :param template: (optional) list of str, that was added to the file in the last step
@@ -17,7 +17,7 @@ class BaseCommand:
 
 class BaseError:
     @staticmethod
-    def check_error(template, x1, y1, x2, y2):
+    def check_errors(template, x1, y1, x2, y2):
         if not template:
             raise ValidationError('Not found template. Give it to the class instance')
 

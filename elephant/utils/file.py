@@ -1,5 +1,5 @@
 import os
-from setting import RPOJECT_PATH
+import sys
 
 
 class FindFileUtils:
@@ -13,22 +13,12 @@ class FindFileUtils:
                 raise FileNotFoundError('Path ' + self.file_path + ' doesn\'t exist')
             return self.file_path
 
-        # if the path relative to project directory
-        if os.path.exists(os.path.join(RPOJECT_PATH, self.file_path)):
-            return os.path.join(RPOJECT_PATH, self.file_path)
+        # check the path relative to the file from which the method is called
+        base_dir = os.path.dirname(os.path.realpath(sys.argv[0]))
+        if os.path.exists(os.path.join(base_dir, self.file_path)):
+            return os.path.join(base_dir, self.file_path)
 
-        def _find_by_name(file_name, folder):
-            for element in os.scandir(folder):
-                if element.is_file():
-                    if element.name == file_name:
-                        return os.path.join(folder, element.name)
-                else:
-                    if _find_by_name(file_name, element.path):
-                        return _find_by_name(file_name, element.path)
-
-        # try to find file in the project directory
-        if _find_by_name(self.file_path, RPOJECT_PATH):
-            return _find_by_name(self.file_path, RPOJECT_PATH)
-
-        # hopelessness
-        raise FileNotFoundError('File on this path ' + self.file_path + ' not found')
+        error_message = 'File on this path "' + os.path.join(base_dir, self.file_path) + '" not found. '
+        error_message += 'Check if the extension was transferred' if \
+            self.file_path.find('.') == -1 else ''
+        raise FileNotFoundError(error_message)
