@@ -81,4 +81,4 @@ Interpreter('output.txt', CommandReader('test.txt').commands).execute()
 ```
 
 ## Examples    
-All examples see in the directory example.
+All examples see in the directory examples.
