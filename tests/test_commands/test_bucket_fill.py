@@ -10,7 +10,7 @@ class TestCanvas:
         with pytest.raises(ValidationError, match='isn\'t file'):
             BucketFill(
                 file='like.file',
-                template=['------', '|xxx   |', '|x x   |', '|xxx   |', '------']
+                template=['--------', '|xxx   |', '|x x   |', '|xxx   |', '--------']
             ).create(5, 1, 'o')
 
     def test_file_closed(self):
@@ -19,7 +19,7 @@ class TestCanvas:
         with pytest.raises(ValidationError, match='isn\'t open'):
             BucketFill(
                 file=file,
-                template=['------', '|xxx   |', '|x x   |', '|xxx   |', '------']
+                template=['--------', '|xxx   |', '|x x   |', '|xxx   |', '--------']
             ).create(5, 1, 'o')
 
     @open_file('test_file.txt', 'w')
@@ -30,7 +30,7 @@ class TestCanvas:
         ):
             bucket_fill = BucketFill(
                 file=self.file,
-                template=['------', '|xxx   |', '|x x   |', '|xxx   |', '------']
+                template=['--------', '|xxx   |', '|x x   |', '|xxx   |', '--------']
             )
 
             # because the BucketFill is depends on the line and the rectangle
@@ -44,7 +44,7 @@ class TestCanvas:
     def test_general(self, tmpdir):
         bucket_fill = BucketFill(
             file=self.file,
-            template=['------', '|xxx   |', '|x x   |', '|xxx   |', '------']
+            template=['--------', '|xxx   |', '|x x   |', '|xxx   |', '--------']
         )
         bucket_fill.rectangle_character = 'x'
         bucket_fill.line_character = 'x'
@@ -53,11 +53,11 @@ class TestCanvas:
 
     @open_file('test_file.txt', 'w')
     def test_returning_template(self, tmpdir):
-        expected = ['------', '|xxxooo|', '|x xooo|', '|xxxooo|', '------']
+        expected = ['--------', '|xxxooo|', '|x xooo|', '|xxxooo|', '--------']
 
         bucket_fill = BucketFill(
             file=self.file,
-            template=['------', '|xxx   |', '|x x   |', '|xxx   |', '------']
+            template=['--------', '|xxx   |', '|x x   |', '|xxx   |', '--------']
         )
         bucket_fill.rectangle_character = 'x'
         bucket_fill.line_character = 'x'

@@ -27,7 +27,6 @@ class Elephant:
 
         # read test_commands from input file
         self.commands = CommandReader(self.input_file_path).commands
-        print(self.commands)
 
         # execute test_commands
         Interpreter(self.output_file_path, self.commands).execute()

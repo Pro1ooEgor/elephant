@@ -1,6 +1,7 @@
 import _io
 import os
 
+from elephant.constants import HORIZONTAL_BORDER_CHARACTER, VERTICAL_BORDER_CHARACTER
 from elephant.error import ValidationError
 from .base_classes import BaseCommand
 
@@ -8,7 +9,6 @@ from .base_classes import BaseCommand
 class BucketFill(BaseCommand):
     def __init__(self, file: _io.TextIOWrapper, template: list):
         super().__init__(file, template)
-        self.filling_area = {}
         self.line_character = os.environ.get('LINE_CHARACTER', None)
         self.rectangle_character = os.environ.get('RECTANGLE_CHARACTER', None)
 
@@ -18,60 +18,62 @@ class BucketFill(BaseCommand):
         if self.file.closed:
             raise ValidationError(f'File {self.file} isn\'t open')
 
-        if not self.is_empty_area(self.template[y][x]):
+        if not self.is_empty_character(self.template[y][x]):
             raise ValidationError(
                 'Not correct coordinates. '
                 'BucketFill needs the coordinates in the empty area'
             )
 
-    def is_empty_area(self, current_character: str):
-        if current_character == self.line_character or current_character == self.rectangle_character:
+    def is_empty_character(self, current_character: str):
+        if current_character == self.line_character \
+                or current_character == self.rectangle_character \
+                or current_character == HORIZONTAL_BORDER_CHARACTER \
+                or current_character == VERTICAL_BORDER_CHARACTER:
             return False
         return True
 
-    def first_check_empty_area(self, x, y):
-        current_state_y = []
+    def is_connected_character(self, current_character: str):
+        if current_character == self.character:
+            return True
+        return False
+
+    def is_empty_area(self, x: int, y: int):
+        character = self.template[y][x]
+        if self.is_empty_character(character) \
+                and not self.is_connected_character(character):
+            return True
+        return False
+
+    def draw_on_the_template(self, x, y):
+        self.template[y] = ''.join((
+            self.template[y][:x],
+            self.character,
+            self.template[y][x + 1:]
+        ))
+
+    def check_area(self, x, y):
+        # here we write the x coordinates that fall under the fill conditions
+        current_x_state = []
+
         for index, x_character in enumerate(self.template[y][1:-1]):
-            if self.is_empty_area(x_character):
-                current_state_y.append(index + 1)
+            if self.is_empty_character(x_character):
+                current_x_state.append(index + 1)
+            elif index + 1 < x:
+                current_x_state.clear()
             elif index + 1 > x:
                 break
-            elif index + 1 < x:
-                current_state_y.clear()
-        self.filling_area[y] = current_state_y
 
-    def check_connected_empty_area(self, last_y, current_y):
-        if self.filling_area.get(last_y, False):
-            state_last_y = self.filling_area[last_y].copy()
-        else:
-            return
+        # and then draw them on the template
+        for x_index in current_x_state:
+            self.draw_on_the_template(x_index, y)
 
-        # state - is the suitable for filling area
-        # and it compute on each line
-        current_state_y = []
-        not_in_last_state = []
-        last_index_not_in_last_state = False
-        for index, x_character in enumerate(self.template[current_y][1:-1]):
-            if self.is_empty_area(x_character):
-                if index + 1 not in state_last_y and last_index_not_in_last_state:
-                    not_in_last_state.append(index + 1)
-                else:
-                    not_in_last_state.clear()
-                current_state_y.append(index + 1)
-            elif state_last_y and index + 1 <= state_last_y[0]:
-                current_state_y.clear()
-            elif not_in_last_state:
-                current_state_y = list(set(current_state_y).difference(set(not_in_last_state)))
-                not_in_last_state.clear()
-            elif index + 1 not in state_last_y:
-                last_index_not_in_last_state = True
-            else:
-                break
-        if not_in_last_state:
-            current_state_y = list(set(current_state_y).difference(set(not_in_last_state)))
-            not_in_last_state.clear()
-        if current_state_y:
-            self.filling_area[current_y] = current_state_y
+        # last step is check in this (x,y) coordinate
+        # one coordinate above (x, y + 1) and one below (x, y - 1)
+        for x_index in current_x_state:
+            if self.is_empty_area(x_index, y + 1):
+                self.check_area(x_index, y + 1)
+            if self.is_empty_area(x_index, y - 1):
+                self.check_area(x_index, y - 1)
 
     def create(self, x, y, c: str):
         """
@@ -82,35 +84,9 @@ class BucketFill(BaseCommand):
         :return: list of str, that was added to the file in this step
         """
         self.check_errors(x, y)
-
         self.character = c
 
-        # step 1: check the empty connected area and then
-        # add it to the dictionary self.filling_area
-
-        # check in the line that contains the coordinate passed to the command
-        self.first_check_empty_area(x, y)
-
-        # check in the lines above
-        for current_y in range(len(self.template[1:y]))[::-1]:
-            self.check_connected_empty_area(current_y+2, current_y+1)
-
-        # check in the lines below
-        for current_y in range(len(self.template))[y+1:-1]:
-            self.check_connected_empty_area(current_y-1, current_y)
-
-        # step 2: fill the self.template
-        # according to the coordinates of the self.filing_area
-        for y_index, current_y in enumerate(self.template[1:-1]):
-            filling_area = self.filling_area.get(y_index+1, False)
-            if filling_area:
-                for x_index, current_x in enumerate(current_y):
-                    if x_index in filling_area:
-                        self.template[y_index+1] = ''.join((
-                            self.template[y_index+1][:x_index],
-                            self.character,
-                            self.template[y_index+1][x_index + 1:]
-                        ))
+        self.check_area(x, y)
 
         self.file.write('\n'.join(self.template) + '\n')
 

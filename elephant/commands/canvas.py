@@ -1,3 +1,4 @@
+from elephant.constants import BACKGROUND_CHARACTER, HORIZONTAL_BORDER_CHARACTER, VERTICAL_BORDER_CHARACTER
 from elephant.error import ValidationError
 from .base_classes import BaseCommand
 
@@ -22,10 +23,10 @@ class Canvas(BaseCommand):
 
         template = []
 
-        template.append('-'*(w+2))
+        template.append(HORIZONTAL_BORDER_CHARACTER*(w+2))
         for height in range(h):
-            template.append('|' + ' '*w + '|')
-        template.append('-'*(w+2))
+            template.append(VERTICAL_BORDER_CHARACTER + BACKGROUND_CHARACTER*w + VERTICAL_BORDER_CHARACTER)
+        template.append(HORIZONTAL_BORDER_CHARACTER*(w+2))
 
         self.file.write('\n'.join(template) + '\n')
 
