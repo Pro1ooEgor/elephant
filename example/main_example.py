@@ -4,9 +4,10 @@ from run import Elephant
 from elephant.command_reader import CommandReader
 from elephant.interpreter import Interpreter
 
-# set the characters of Line and Rectangle
-os.environ['RECTANGLE_CHARACTER'] = 'x'
-os.environ['LINE_CHARACTER'] = 'x'
+# if you want to change the default 'x' character
+# to "draw" Line and Rectangle, set the environment variable.
+os.environ['RECTANGLE_CHARACTER'] = 'y'  # default it's 'x'
+os.environ['LINE_CHARACTER'] = 'z'  # default it's 'x''
 
 # set the file path of input and output files
 input_file = 'input.txt'
@@ -26,6 +27,6 @@ Interpreter('output.txt', CommandReader('input.txt').commands).execute()
 Elephant(
     input_file_path='input.txt',
     output_file_path='output.txt',
-    line_character='x',  # optional, by default it is 'x'
-    rectangle_character='x',  # optional, by default it is 'x'
+    line_character='y',  # optional, by default it is 'x'
+    rectangle_character='z',  # optional, by default it is 'x'
 ).run()
