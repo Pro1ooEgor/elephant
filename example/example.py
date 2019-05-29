@@ -12,10 +12,10 @@ os.environ['LINE_CHARACTER'] = 'x'
 input_file = 'test_input_file.txt'
 output_file = 'output_test.txt'
 
-# read commands from input file
+# read test_commands from input file
 commands = CommandReader(input_file).commands
 
-# execute commands
+# execute test_commands
 Interpreter(output_file, commands).execute()
 
 # if you want, to write this in one string

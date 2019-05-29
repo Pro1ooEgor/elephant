@@ -25,8 +25,11 @@ class Elephant:
         os.environ[LINE_CHARACTER] = self.rectangle_character
         os.environ[RECTANGLE_CHARACTER] = self.line_character
 
-        # read commands from input file
+        # read test_commands from input file
         self.commands = CommandReader(self.input_file_path).commands
+        print(self.commands)
 
-        # execute commands
+        # execute test_commands
         Interpreter(self.output_file_path, self.commands).execute()
+
+        return True

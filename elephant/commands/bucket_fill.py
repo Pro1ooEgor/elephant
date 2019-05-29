@@ -9,21 +9,24 @@ class BucketFill(BaseCommand):
     def __init__(self, file: _io.TextIOWrapper, template: list):
         super().__init__(file, template)
         self.filling_area = {}
+        self.line_character = os.environ.get('LINE_CHARACTER', None)
+        self.rectangle_character = os.environ.get('RECTANGLE_CHARACTER', None)
 
     def check_errors(self, x, y):
-        target_coordinate = self.template[y][x]
+        if not hasattr(self.file, 'closed'):
+            raise ValidationError(f'{self.file} isn\'t file')
+        if self.file.closed:
+            raise ValidationError(f'File {self.file} isn\'t open')
 
-        if not self.is_empty_area(target_coordinate):
-            raise ValidationError('Not correct coordinates. '
-                                  'For BucketFill need coordinates in the empty area')
+        if not self.is_empty_area(self.template[y][x]):
+            raise ValidationError(
+                'Not correct coordinates. '
+                'BucketFill needs the coordinates in the empty area'
+            )
 
     def is_empty_area(self, current_character: str):
-        line_character = os.environ.get('LINE_CHARACTER', None)
-        rectangle_character = os.environ.get('RECTANGLE_CHARACTER', None)
-
-        if current_character == line_character or current_character == rectangle_character:
+        if current_character == self.line_character or current_character == self.rectangle_character:
             return False
-
         return True
 
     def first_check_empty_area(self, x, y):

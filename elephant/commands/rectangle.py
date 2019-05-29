@@ -22,7 +22,7 @@ class Rectangle(BaseCommand, BaseError):
         :param y2: (positive int) lower right corner
         :return: list of str, that was added to the file in this step
         """
-        self.check_errors(self.template, x1, y1, x2, y2)
+        self.check_errors(self.file, self.template, x1, y1, x2, y2)
 
         # draw horizontal lines in our rectangle
         Line(

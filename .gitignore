@@ -118,3 +118,5 @@ config_test.json
 private/config*
 *config.json
 *config.yaml
+
+test_file.txt

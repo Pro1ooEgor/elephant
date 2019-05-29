@@ -13,7 +13,7 @@ class Line(BaseCommand, BaseError):
             os.environ[LINE_CHARACTER] = character
 
     def check_errors(self, x1, y1, x2, y2):
-        super().check_errors(self.template, x1, y1, x2, y2)
+        super().check_errors(self.file, self.template, x1, y1, x2, y2)
 
         # currently
         if x1 != x2 and y1 != y2:
